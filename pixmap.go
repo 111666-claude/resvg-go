@@ -1,6 +1,10 @@
 package resvg
 
-import "github.com/kanrichan/resvg-go/internal"
+import (
+	"image/color"
+
+	"github.com/kanrichan/resvg-go/internal"
+)
 
 // Pixmap tinyskia pixmap
 type Pixmap struct {
@@ -63,4 +67,22 @@ func (pm *Pixmap) EncodePNG() ([]byte, error) {
 		return nil, ErrPointerIsNil
 	}
 	return internal.TinySkiaPixmapEncodePng(pm.wk.ctx, pm.wk.mod, pm.ptr)
+}
+
+// Fill fills the whole pixmap with the specified color.
+// A nil color clears the pixmap to transparent black.
+func (pm *Pixmap) Fill(c color.Color) error {
+	if !pm.wk.used.CompareAndSwap(false, true) {
+		return ErrWorkerIsBeingUsed
+	}
+	defer pm.wk.used.Store(false)
+	if pm.ptr == 0 {
+		return ErrPointerIsNil
+	}
+	r, g, b, a := uint8(0), uint8(0), uint8(0), uint8(0)
+	if c != nil {
+		r32, g32, b32, a32 := c.RGBA()
+		r, g, b, a = uint8(r32>>8), uint8(g32>>8), uint8(b32>>8), uint8(a32>>8)
+	}
+	return internal.TinySkiaPixmapFill(pm.wk.ctx, pm.wk.mod, pm.ptr, r, g, b, a)
 }

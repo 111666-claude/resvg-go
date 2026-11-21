@@ -254,6 +254,17 @@ pub extern "C" fn tiny_skia_pixmap_get_height(pixmap: &mut tiny_skia::Pixmap) ->
 }
 
 #[no_mangle]
+pub extern "C" fn tiny_skia_pixmap_fill(
+    pixmap: &mut tiny_skia::Pixmap,
+    red: u8,
+    green: u8,
+    blue: u8,
+    alpha: u8,
+) {
+    pixmap.fill(tiny_skia::Color::from_rgba8(red, green, blue, alpha));
+}
+
+#[no_mangle]
 pub extern "C" fn tiny_skia_transform_identity() -> *mut tiny_skia::Transform {
     let transform = tiny_skia::Transform::identity();
     Box::into_raw(transform.into())

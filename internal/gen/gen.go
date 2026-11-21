@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	targetwasm = "internal/target/wasm32-wasi/release/resvg.wasm"
+	targetwasm = "internal/target/wasm32-wasip1/release/resvg.wasm"
 )
 
 func main() {
-	fmt.Println("Run cargo build --release --target wasm32-wasi ...")
-	carcmd := exec.Command("cargo", "build", "--release", "--target", "wasm32-wasi")
+	fmt.Println("Run cargo build --release --target wasm32-wasip1 ...")
+	carcmd := exec.Command("cargo", "build", "--release", "--target", "wasm32-wasip1")
 	carcmd.Stdout = os.Stdout
 	carcmd.Stderr = os.Stderr
 	carcmd.Dir = "./internal"

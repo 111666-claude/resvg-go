@@ -49,6 +49,7 @@ const (
 	ExportNameTinySkiaPixmapEncodePNG          = "tiny_skia_pixmap_encode_png"
 	ExportNameTinySkiaPixmapGetWidth           = "tiny_skia_pixmap_get_width"
 	ExportNameTinySkiaPixmapGetHeight          = "tiny_skia_pixmap_get_height"
+	ExportNameTinySkiaPixmapFill               = "tiny_skia_pixmap_fill"
 	ExportNameTinySkiaTransformIdentity        = "tiny_skia_transform_identity"
 	ExportNameTinySkiaTransformFromRow         = "tiny_skia_transform_from_row"
 	ExportNameTinySkiaTransformFromTranslate   = "tiny_skia_transform_from_translate"
@@ -855,6 +856,29 @@ func TinySkiaPixmapGetHeight(ctx context.Context, module api.Module, pixmap int3
 		return 0, ErrWasmReturnInvaild
 	}
 	return api.DecodeU32(resp[0]), nil
+}
+
+func TinySkiaPixmapFill(ctx context.Context, module api.Module, pixmap int32, red uint8, green uint8, blue uint8, alpha uint8) error {
+	fn := module.
+		ExportedFunction(ExportNameTinySkiaPixmapFill)
+	if fn == nil {
+		return ErrWasmFunctionNotFound
+	}
+	resp, err := fn.Call(
+		ctx,
+		api.EncodeI32(pixmap),
+		api.EncodeU32(uint32(red)),
+		api.EncodeU32(uint32(green)),
+		api.EncodeU32(uint32(blue)),
+		api.EncodeU32(uint32(alpha)),
+	)
+	if err != nil {
+		return err
+	}
+	if len(resp) != 0 {
+		return ErrWasmReturnInvaild
+	}
+	return nil
 }
 
 func TinySkiaTransformIdentity(ctx context.Context, module api.Module) (int32, error) {
